@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -39,6 +40,17 @@ public class PostToStrava extends Activity {
 	private void sendToStrava( File downloadedFile ) {
 		if ( downloadedFile != null && downloadedFile.exists() ) {
 			writeProgress( "Sending upload@strava shared file.." );
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"upload@strava.com"});
+			intent.putExtra(Intent.EXTRA_SUBJECT, "Garmin GPX Upload");
+			if (!downloadedFile.exists() || !downloadedFile.canRead()) {
+			    writeProgress("Attachment Error: file doesnt exist or cant be read " + downloadedFile );
+			    return;
+			}
+			Uri uri = Uri.fromFile( downloadedFile );
+			intent.putExtra(Intent.EXTRA_STREAM, uri);
+			startActivity(Intent.createChooser(intent, "Send email to strava..."));			
 		}
 	}
 
